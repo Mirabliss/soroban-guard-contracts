@@ -252,14 +252,22 @@ mod tests {
         fund_pool(&env, &lender, &valuable, &pool_funder, 10_000);
 
         StellarAssetClient::new(&env, &worthless).mint(&borrower_id, &REQUIRED);
+        StellarAssetClient::new(&env, &valuable).mint(&borrower_id, &(FEE - 1));
         borrower.configure(&Mode::FeeShortfall, &worthless);
 
         lender.flash_loan(&borrower_id, &valuable, &LOAN_AMOUNT, &worthless);
 
         assert!(lender.is_repaid());
+        let pool_valuable = TokenClient::new(&env, &valuable).balance(&lender_id);
         assert_eq!(
-            TokenClient::new(&env, &valuable).balance(&lender_id),
-            10_000 - LOAN_AMOUNT + (LOAN_AMOUNT + FEE - 1)
+            pool_valuable,
+            10_000 - LOAN_AMOUNT + (LOAN_AMOUNT + FEE - 1),
+            "valuable repayment is one fee unit short"
+        );
+        assert_eq!(
+            TokenClient::new(&env, &worthless).balance(&lender_id),
+            REQUIRED,
+            "worthless token satisfies the wrong-token repayment check"
         );
     }
 
