@@ -87,6 +87,10 @@ members = [
     "vulnerable/signed_unsigned_wrap",
     "vulnerable/abs_min_overflow",
     "vulnerable/negative_oracle_price",
+    "vulnerable/verifier_threshold_ignored",
+    "vulnerable/audit_expiry_ignored",
+    "vulnerable/buy_without_listing",
+    "vulnerable/listing_price_signature_gap",
 ]
 
 [workspace.dependencies]
